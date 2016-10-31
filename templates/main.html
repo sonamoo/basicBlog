@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block content %}
-
 
 <!DOCTYPE html>
 <html>
@@ -11,6 +9,23 @@
 
 <body>
 	<h1> This is the main page </h1>
+	<hr>
+
+
+	{% for article in articles %}
+	
+	<div class="article">
+		<div class="article_head">
+			<h2 class="article_title">{{article.title}}</h2>
+			<p class="article_created">{{article.created}}</p>
+			
+		</div>
+		<div class="contents">
+			<p class="article_contents">{{article.contents}}</p>
+		</div>
+	</div>
+	{% endfor %}
+
 </body>
 </html>
 
