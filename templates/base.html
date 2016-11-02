@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Template</title>
+	<link rel="stylesheet" type="text/css" href="/static/main.css">
+	<title>Simple Blog</title>
 </head>
 <body>
-	<h1>
-		Simple Blog Practice!
-	</h1>
-
+	<a href="blog" class="main-title">
+		Simple Blog
+	</a>
+	<div id="content">
 	{% block content %}
 	{% endblock %}
+	</div>
 	
 </body>
 </html>

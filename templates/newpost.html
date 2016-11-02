@@ -1,32 +1,23 @@
 {% extends "base.html" %}
+
+
 {% block content %}
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Basic Blog</title>
-</head>
+	<h2>New Post</h2>
 
-<body>
-	<h1> This is the posting page </h1>
+		<form method="post">
+			<label>
+				<div>Title</div>
+				<input type="text" name="title" value="{{title}}">
+			</label>
+			
+			<label>
+				<div>Contents</div>
+				<textarea name="contents">{{contents}}</textarea>
+			</label>
 
+			<div class="error">{{error}}</div>
 
-
-	<form method="post">
-		<label>
-			<div>Title</div>
-			<textarea name="title">{{title}}</textarea>
-		</label>
-		<label>
-			<div>Contents</div>
-			<textarea name="contents">{{contents}}</textarea>
-		</label>
-		<input type="submit">
-	</form>
-
-
-</body>
-</html>
-
-
+			<input type="submit">
+		</form>
 {% endblock %}
