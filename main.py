@@ -226,14 +226,14 @@ class Login(Handler):
 class Logout(Handler):
 	def get(self):
 		self.logout()
-		self.redirect('/')
+		self.redirect('/blog/register')
 
 class Welcome(Handler):
 	def get(self):
 		if self.user:
 			self.render('welcome.html', username = self.user.name)
 		else:
-			self.redirect('/')
+			self.redirect('/blog/register')
 
 class NewPost(Handler):
 	def get(self):
@@ -257,7 +257,7 @@ app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
     ('/blog/([0-9]+)', PostPage),
-    ('/', Register),
+    ('/blog/register', Register),
 	('/blog/login', Login),
 	('/blog/logout', Logout),
 	('/welcome', Welcome)

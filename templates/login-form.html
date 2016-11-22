@@ -1,34 +1,27 @@
 {% extends "base.html" %}
-
-
 {% block content %}
 
-    <h2>Login</h2>
-    <form method="post">
-      <table>
-        <tr>
-          <td class="label">
-            Username
-          </td>
-          <td>
-            <input type="text" name="username" value="{{username}}">
-          </td>
-        </tr>
+    <div class="row row-content">
+        <br>
+        <br>
+        <br>
+    </div>
+    <div class="row row-content">
+        <div class="col-md-4 col-md-offset-4">
+        <form method="post">
+            <h2 class="text-center">Login to the Blog</h2>
+            <div class="form-group">
+                <label for="inputUsername">ID</label>
+                <input type="text" class="form-control" name="username" value="{{username}}" placeholder="ID">
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input type="password" class="form-control" name="password" value="" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+            <a href="/" class="btn btn-default btn-block" role="button">Register</a>
+        </form>
+        </div>
+    </div>
 
-        <tr>
-          <td class="label">
-            Password
-          </td>
-          <td>
-            <input type="password" name="password" value="">
-          </td>
-          <td class="error">
-            {{error}}
-          </td>
-        </tr>
-      </table>
-
-      <input type="submit">
-    </form>
-    <a href="/">Register</a>
 {% endblock %}

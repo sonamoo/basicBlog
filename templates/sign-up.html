@@ -1,61 +1,39 @@
 {% extends "base.html" %}
-
-
 {% block content %}
-    <h2>Signup</h2>
-    <form method="post">
-      <table>
-        <tr>
-          <td class="label">
-            Username
-          </td>
-          <td>
-            <input type="text" name="username" value="{{username}}">
-          </td>
-          <td class="error">
-            {{error_username}}
-          </td>
-        </tr>
 
-        <tr>
-          <td class="label">
-            Password
-          </td>
-          <td>
-            <input type="password" name="password" value="">
-          </td>
-          <td class="error">
-            {{error_password}}
-          </td>
-        </tr>
-
-        <tr>
-          <td class="label">
-            Verify Password
-          </td>
-          <td>
-            <input type="password" name="verify" value="">
-          </td>
-          <td class="error">
-            {{error_verify}}
-          </td>
-        </tr>
-
-        <tr>
-          <td class="label">
-            Email (optional)
-          </td>
-          <td>
-            <input type="text" name="email" value="{{email}}">
-          </td>
-          <td class="error">
-            {{error_email}}
-          </td>
-        </tr>
-      </table>
-
-      <input type="submit">
-    </form>
     
-    <a href="/blog/login">login</a>
+        <div class="row row-content">
+            <br>
+            <br>
+            <br>
+        </div>
+        <div class="row row-content">
+            <div class="col-md-4 col-md-offset-4">
+            <form method="post">
+                <h2 class="text-center">Register</h2>
+                <div class="form-group">
+                    <label for="inputUsername">Username</label>
+                    <input type="text" class="form-control" name="username" value="{{username}}" placeholder="ID">
+                    <span class="error">{{error_username}}</span>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input type="password" class="form-control" name="password" value="" placeholder="Password">
+                    <span class="error">{{error_password}}</span>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Verify Password</label>
+                    <input type="password" class="form-control" name="verify" value="" placeholder="Verify">
+                    <span class="error">{{error_verify}}</span>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">E-mail (Optional)</label>
+                    <input type="text" class="form-control" name="email" value="" placeholder="Your email address">
+                    <span class="error">{{error_email}}</span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+            </form>
+            </div>
+        </div>
+
 {% endblock %}
