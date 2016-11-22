@@ -42,7 +42,7 @@ class Handler(webapp2.RequestHandler):
 
 	def render(self, template, **kw):
 		self.write(self.render_str(template, **kw))
-		
+
 	def set_secure_cookie(self, name, val):
 		cookie_val = make_secure_val(val)
 		self.response.headers.add_header(
@@ -66,11 +66,25 @@ class Handler(webapp2.RequestHandler):
 		uid = self.read_secure_cookie('user_id')
 		self.user = uid and User.by_id(int(uid))
 
+def make_salt(length = 5):
+	return ''.join(random.choice(letters) for x in xrange(length))
 
+def make_pw_hash(name, pw, salt = None):
+	if not salt:
+		salt = make_salt()
+	h = hashlib.sha256(name + pw + salt).hexdigest()
+	return '%s,%s' % (salt, h)
+
+def valid_pw(name, pw, h):
+	salt = h.split(',')[0]
+	return h == make_pw_hash(name, pw, salt)
 
 # blog_key is for the data store. It stores
 def blog_key(name = 'default'):
 	return db.Key.from_path('blogs', name)
+
+def users_key(group = 'default'):
+	return db.Key.from_path('users', group)
 
 
 
