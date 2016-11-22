@@ -1,11 +1,17 @@
 import os
 import re
+import hashlib
+import hmac
+import random
+
 from string import letters
 
 import webapp2
 import jinja2
 
 from google.appengine.ext import db
+
+secret = 'SWEiosdjfokweqr'
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -28,7 +34,9 @@ class Handler(webapp2.RequestHandler):
 
 # blog_key is for the data store. It stores
 def blog_key(name = 'default'):
-	return db.Key.from_path('blogs', name) 
+	return db.Key.from_path('blogs', name)
+
+
 
 class Article(db.Model):
 	title = db.StringProperty(required = True)
