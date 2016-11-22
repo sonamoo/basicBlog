@@ -5,7 +5,9 @@ threadsafe: yes
 handlers:
 - url: /static
   static_dir: static
-  
+- url: /bootstrap
+  static_dir: bootstrap
+
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico

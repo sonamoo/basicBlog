@@ -79,7 +79,7 @@ def valid_pw(name, pw, h):
 	salt = h.split(',')[0]
 	return h == make_pw_hash(name, pw, salt)
 
-# blog_key is for the data store. It stores
+# blog_key is for the data store.
 def blog_key(name = 'default'):
 	return db.Key.from_path('blogs', name)
 
@@ -211,7 +211,6 @@ class Register(Signup):
 class Login(Handler):
 	def get(self):
 		self.render('login-form.html')
-
 	def post(self):
 		username = self.request.get('username')
 		password = self.request.get('password')
@@ -227,16 +226,14 @@ class Login(Handler):
 class Logout(Handler):
 	def get(self):
 		self.logout()
-		self.redirect('/signup')
-
+		self.redirect('/')
 
 class Welcome(Handler):
 	def get(self):
 		if self.user:
 			self.render('welcome.html', username = self.user.name)
 		else:
-			self.redirect('/signup')
-
+			self.redirect('/')
 
 class NewPost(Handler):
 	def get(self):
@@ -259,9 +256,9 @@ class NewPost(Handler):
 app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
-    ('/blog/([0-9]+)', PostPage)
-    ('/signup', Register),
-	('/login', Login),
-	('/logout', Logout),
-	('/welcome', Welcome),
+    ('/blog/([0-9]+)', PostPage),
+    ('/', Register),
+	('/blog/login', Login),
+	('/blog/logout', Logout),
+	('/welcome', Welcome)
 ], debug=True)
