@@ -207,7 +207,7 @@ class Register(Signup):
 			u.put()
 
 			self.login(u)
-			self.redirect('/welcome')
+			self.redirect('/blog/welcome')
 
 class Login(Handler):
 	def get(self):
@@ -219,7 +219,7 @@ class Login(Handler):
 		u = User.verify_user(username, password)
 		if u:
 			self.login(u)
-			self.redirect('/welcome')
+			self.redirect('/blog/welcome')
 		else:
 			msg = "Invalid login"
 			self.render('login-form.html', error = msg)
@@ -255,6 +255,15 @@ class NewPost(Handler):
 			self.render("newpost.html", title = title, contents = contents, error = error)
 
 class EditPost(Handler):
+	def get(self):
+		a = db.GqlQuery("SELECT * FROM Article WHERE created_by = :u", u = self.user.name)
+		title = "sdfsdafasdfsadf"
+		self.render("edit-post.html", a = a, title = title)
+		
+
+
+
+
 
 
 app = webapp2.WSGIApplication([
@@ -265,5 +274,5 @@ app = webapp2.WSGIApplication([
     ('/blog/register', Register),
 	('/blog/login', Login),
 	('/blog/logout', Logout),
-	('/welcome', Welcome)
+	('/blog/welcome', Welcome)
 ], debug=True)
