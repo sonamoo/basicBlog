@@ -1,6 +1,8 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;
+    max-width: 900px;
+    margin: 0 auto;
     
 }
 
@@ -10,6 +12,14 @@ h2 {
 	margin-bottom: 20px
 }
 
+a {
+  text-decoration: none;
+
+}
+
+a:hover {
+  text-decoration: none;
+}
 .error {
 	color: red;
 }
@@ -76,24 +86,18 @@ h2 {
 }
 
 .article-heading {
-	position: relative;
-	border-bottom: 3px solid #666;
-    margin-top: 20px;
+    margin-top: 40px;
+    border-bottom: 1px solid gray;
 }
 
 
 .article-title {
-	font-size: 24px;
+	font-size: 40px;
 	font-weight: bold;
+    
 }
 
-.article-date {
-	position: absolute;
-	right: 0px;
-	bottom: 0px;
-	color: #999;
-}
 
 .article-content {
-	margin-top: 5px;
+	margin-top: 2em;
 }

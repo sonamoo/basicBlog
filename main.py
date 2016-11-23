@@ -92,6 +92,7 @@ class Article(db.Model):
 	title = db.StringProperty(required = True)
 	contents = db.TextProperty(required = True)
 	created = db.DateTimeProperty(auto_now_add = True)
+	created_by = db.StringProperty()
 	last_modified = db.DateTimeProperty(auto_now = True)
 
 	def render(self):
@@ -242,9 +243,10 @@ class NewPost(Handler):
 	def post(self):
 		title = self.request.get("title")
 		contents = self.request.get("contents")
+		created_by = self.user.name
 
 		if title and contents:
-			a = Article(parent = blog_key(), title = title, contents = contents)
+			a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
 			a.put()
 			self.redirect('/blog/%s' % str(a.key().id()))
 
@@ -252,10 +254,13 @@ class NewPost(Handler):
 			error = "We need both a title and the blog content"
 			self.render("newpost.html", title = title, contents = contents, error = error)
 
+class EditPost(Handler):
+
 
 app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
+    ('/blog/editpost', EditPost),
     ('/blog/([0-9]+)', PostPage),
     ('/blog/register', Register),
 	('/blog/login', Login),

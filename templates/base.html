@@ -6,7 +6,7 @@
 	<title>Simple Blog</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <header>
             <a href="/blog" class="main-title">
                 Simple Blog
@@ -21,10 +21,8 @@
               </ul>
             </div>
         </header>
-        <div id="content">
         {% block content %}
-        {% endblock %}
-        </div>          
+        {% endblock %}       
     </div>
 <script src="/bootstrap/jquery.min.js"></script>
 <script src="/bootstrap/bootstrap.min.js"></script>
