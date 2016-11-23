@@ -1,6 +1,7 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;
+    
 }
 
 h2 {
@@ -15,10 +16,10 @@ h2 {
 
 .nav ul {
       list-style: none;
-      background-color: #444;
       text-align: center;
       padding: 0;
       margin: 0;
+    
 }
 
 .nav li {
@@ -26,12 +27,11 @@ h2 {
       font-size: 1.2em;
       line-height: 40px;
       height: 40px;
-      border-bottom: 1px solid #888;
 }
 
 .nav a {
   text-decoration: none;
-  color: #fff;
+  color: #000000;
   display: block;
   transition: .3s background-color;
 }
@@ -47,12 +47,15 @@ h2 {
 }
  
 @media screen and (min-width: 600px) {
+    .nav ul {
+        border-bottom: 1px solid #888;
+    }
+    
   .nav li {
-    width: 120px;
-    border-bottom: none;
-    height: 50px;
-    line-height: 50px;
-    font-size: 1.4em;
+    width: 130px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 1.3em;
   }
  
   /* Option 1 - Display Inline */
@@ -75,6 +78,7 @@ h2 {
 .article-heading {
 	position: relative;
 	border-bottom: 3px solid #666;
+    margin-top: 20px;
 }
 
 
