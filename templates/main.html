@@ -15,15 +15,17 @@
 	{% for a in articles %}
 	{{ a.render() | safe }}
     
-        {% if a.created_by == username %}
-                <div>
-                    <p class="myArticle">My Article</p>
-                </div>
-                <div class="col-md-6 col-md-offset-6 text-right">
-                    <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
-                    <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
-                </div>
-        {% endif %}
+        
+    {% if a.created_by == username %}
+        <div class="article-buttons">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
+                <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
+            </div>
+        </div>
+        </div>
+    {% endif %}
 	{% endfor %}
 
 {% endblock %}

@@ -89,7 +89,7 @@ def users_key(group = 'default'):
 class User(db.Model):
 	name = db.StringProperty(required = True)
 	pw_hash = db.StringProperty(required = True)
-	email = db.StringProperty()
+	email = db.StringProperty(required = False)
 
 	@classmethod
 	def by_id(cls, uid):
@@ -126,6 +126,7 @@ class Article(db.Model):
 	created_by = db.StringProperty(required = False)
 	last_modified = db.DateTimeProperty(auto_now = True)
 	rate = db.IntegerProperty(required = False)
+	comment = db.StringProperty(required = False)
 
 	def render(self):
 		self._render_text = self.contents.replace('\n', '<br>')

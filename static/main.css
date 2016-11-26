@@ -85,9 +85,16 @@ a:hover {
 	text-decoration: none;
 }
 
+.article {
+    margin-top : 2em;
+    border-top : 1px solid #efefef;
+    border-left : 1px solid #efefef;
+    border-right : 1px solid #efefef;
+}
+
 .article-heading {
-    margin-top: 40px;
-    border-bottom: 1px solid gray;
+    
+    padding: 1em;
 }
 
 
@@ -96,14 +103,22 @@ a:hover {
 	font-weight: bold;
 }
 
+.article-date, .article-writer {
+    color: gray;
+}
+
 
 .article-content {
-	margin-top: 2em;
+    padding : 1em;
+}
+.article-buttons {
+    border-bottom: 1px solid #efefef;
+    border-left: 1px solid #efefef;
+    border-right: 1px solid #efefef;
+    padding : 1em;    
 }
 
 
 .notice {
     color : #005f5f;
-    
-    background-image: url(http://lorempixel.com/900/50" />)
 }
