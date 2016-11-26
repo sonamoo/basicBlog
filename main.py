@@ -140,8 +140,12 @@ class MainPage(Handler):
 		if not self.user:
 			self.user = NoUser
 
-
 		self.render("main.html", articles = articles, username = self.user.name)
+
+	def like(self):
+		a.rate += 1
+		a.rate.put()
+		
 
 class PostPage(Handler):
 	def get(self, post_id):

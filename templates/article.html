@@ -1,14 +1,17 @@
 <div class="article">
     <div class="article-heading">
         <div class="row">
-            <div class="col-md-12 ">
-                <div class="article-title">
-                    <span>{{a.rate}}</span>
-                    <span>{{a.title}}</span>
-                </div>
+            <div class="col-md-12 article-rate">
+                {% if a.rate %}
+                <span class="article-rate-number">{{a.rate}}</span> 
+                <span>people voted for this post!</span>
+                {% endif %}
             </div>
-            
-    
+        </div>
+        <div class="row">
+            <div class="col-md-12 article-title">
+                {{a.title}}
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6">
@@ -26,5 +29,4 @@
                 {{a._render_text | safe}}
             </div>
         </div>
-        
     </div>
