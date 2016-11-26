@@ -17,7 +17,6 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 								autoescape = True)
 
-
 def render_str(template, **params):
 	t = jinja_env.get_template(template)
 	return t.render(params)
@@ -66,6 +65,7 @@ class Handler(webapp2.RequestHandler):
 		uid = self.read_secure_cookie('user_id')
 		self.user = uid and User.by_id(int(uid))
 
+
 def make_salt(length = 5):
 	return ''.join(random.choice(letters) for x in xrange(length))
 
@@ -85,38 +85,6 @@ def blog_key(name = 'default'):
 
 def users_key(group = 'default'):
 	return db.Key.from_path('users', group)
-
-
-
-class Article(db.Model):
-	title = db.StringProperty(required = True)
-	contents = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-	created_by = db.StringProperty()
-	last_modified = db.DateTimeProperty(auto_now = True)
-
-	def render(self):
-		self._render_text = self.contents.replace('\n', '<br>')
-		return render_str("article.html", a = self)
-	
-class MainPage(Handler):
-	def get(self):
-		articles = db.GqlQuery("select * from Article order by created desc limit 10")
-		#   articles = Article.all().order('-created')
-		#   This is google pocedure language, that can be used to get db.
-		self.render("main.html", articles = articles)
-
-class PostPage(Handler):
-	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		#key find the article from the post_id passed from the url
-		article = db.get(key)
-
-		if not article:
-			self.error(404)
-			return
-
-		self.render("permalink.html", article = article)
 
 class User(db.Model):
 	name = db.StringProperty(required = True)
@@ -141,10 +109,52 @@ class User(db.Model):
 					email = email)
 
 	@classmethod
-	def verify_user(cls, name, pw):
-		u = cls.by_name(name)
-		if u and valid_pw(name, pw, u.pw_hash):
+	def verify_user(cls, username, pw):
+		u = cls.by_name(username)
+		if u and valid_pw(username, pw, u.pw_hash):
 			return u
+
+class NoUser(Handler):
+	name = "NoUser"
+	description = "Please login or create an account to write your opinion :)"
+
+
+class Article(db.Model):
+	title = db.StringProperty(required = True)
+	contents = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+	created_by = db.StringProperty(required = False)
+	last_modified = db.DateTimeProperty(auto_now = True)
+	rate = db.IntegerProperty(required = False)
+
+	def render(self):
+		self._render_text = self.contents.replace('\n', '<br>')
+		return render_str("article.html", a = self)
+	
+class MainPage(Handler):
+	def get(self):
+		articles = db.GqlQuery("select * from Article order by created desc limit 10")
+		#   articles = Article.all().order('-created')
+		#   This is google pocedure language, that can be used to get db.
+		if not self.user:
+			self.user = NoUser
+
+
+		self.render("main.html", articles = articles, username = self.user.name)
+
+class PostPage(Handler):
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		#key find the article from the post_id passed from the url
+		article = db.get(key)
+
+		if not article:
+			self.error(404)
+			return
+
+		self.render("permalink.html", article = article)
+
+
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -224,6 +234,9 @@ class Login(Handler):
 			msg = "Invalid login"
 			self.render('login-form.html', error = msg)
 
+#	def login(self, user):
+#		self.set_secure_cookie('user_id' , str(user.key().id()))
+
 class Logout(Handler):
 	def get(self):
 		self.logout()
@@ -255,21 +268,31 @@ class NewPost(Handler):
 			self.render("newpost.html", title = title, contents = contents, error = error)
 
 class EditPost(Handler):
-	def get(self):
-		a = db.GqlQuery("SELECT * FROM Article WHERE created_by = :u", u = self.user.name)
-		title = "sdfsdafasdfsadf"
-		self.render("edit-post.html", a = a, title = title)
-		
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		self.render("edit-post.html", a = a)
 
+	def post(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		a.title = self.request.get("title")
+		a.contents = self.request.get("contents")
+		a.put()
+		self.redirect('/blog/%s' % str(a.key().id()))
 
-
-
-
+class DeletePost(Handler):
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		a.delete()
+		self.redirect('/blog/')
 
 app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
-    ('/blog/editpost', EditPost),
+    ('/blog/editpost/([0-9]+)', EditPost),
+    ('/blog/deletepost/([0-9]+)', DeletePost),
     ('/blog/([0-9]+)', PostPage),
     ('/blog/register', Register),
 	('/blog/login', Login),

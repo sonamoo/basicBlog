@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+    {% if username == "NoUser" %}
+        <div class="notice">
+            <div class="row">
+                <p class="text-center">Welcome to our Blog!</p>
+                
+                <p class="text-center">Please log in or create an account to post your article :) </p>
+                
 
+            </div>
+        </div>
+
+    {% endif %}
 	{% for a in articles %}
 	{{ a.render() | safe }}
-	<br><br>
+    
+        {% if a.created_by == username %}
+                <div>
+                    <p class="myArticle">My Article</p>
+                </div>
+                <div class="col-md-6 col-md-offset-6 text-right">
+                    <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
+                    <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
+                </div>
+        {% endif %}
 	{% endfor %}
 
 {% endblock %}

@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
-		<form method="put">
+		<form method="post">
             <h2>Edit Post</h2>
             <div class="form-group">
                 <label for="inputTitle">Title</label>
@@ -18,22 +18,5 @@
 		</form>
         </div>
 </div>
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-        {{a.title}}
-    </div>
-    
-</div>
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-        {{a.contents}}
-    </div>
-    
-</div>
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-        {{a.created_by}}
-    </div>
-    
-</div>
+
 {% endblock %}
