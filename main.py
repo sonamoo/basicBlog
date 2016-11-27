@@ -125,7 +125,8 @@ class Article(db.Model):
 	created = db.DateTimeProperty(auto_now_add = True)
 	created_by = db.StringProperty(required = False)
 	last_modified = db.DateTimeProperty(auto_now = True)
-	rate = db.IntegerProperty(required = False)
+	likes = db.IntegerProperty(required = False)
+	liked_by = db.ListProperty(str)
 	comment = db.StringProperty(required = False)
 
 	def render(self):
@@ -142,11 +143,6 @@ class MainPage(Handler):
 
 		self.render("main.html", articles = articles, username = self.user.name)
 
-	def like(self):
-		a.rate += 1
-		a.rate.put()
-		
-
 class PostPage(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
@@ -158,6 +154,22 @@ class PostPage(Handler):
 			return
 
 		self.render("permalink.html", article = article)
+
+class LikePost(Handler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect("/login")
+        else:
+            key = db.Key.from_path("Article", int(post_id), parent=blog_key())
+            article = db.get(key)
+
+            if article.created_by == self.user:
+                self.redirect("/blog")
+            else:
+                article.likes += 1
+                article.liked_by.append(self.user)
+                article.put()
+                self.redirect("/blog")
 
 
 
@@ -263,6 +275,7 @@ class NewPost(Handler):
 		contents = self.request.get("contents")
 		created_by = self.user.name
 
+
 		if title and contents:
 			a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
 			a.put()
@@ -278,6 +291,7 @@ class EditPost(Handler):
 		a = db.get(key)
 		self.render("edit-post.html", a = a)
 
+
 	def post(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
 		a = db.get(key)
@@ -285,6 +299,21 @@ class EditPost(Handler):
 		a.contents = self.request.get("contents")
 		a.put()
 		self.redirect('/blog/%s' % str(a.key().id()))
+
+class LikePost(Handler):
+	def get(self, post_id):
+		if not self.user:
+			self.redirect("/login")
+		else:
+			key = db.Key.from_path("Article", int(post_id), parent=blog_key())
+			article = db.get(key)
+
+		if article.created_by == self.user:
+			self.redirect("/blog")
+		else:
+			article.likes += 1
+			article.put()
+			self.redirect("/blog")
 
 class DeletePost(Handler):
 	def get(self, post_id):
@@ -298,6 +327,7 @@ app = webapp2.WSGIApplication([
     ('/blog/newpost', NewPost),
     ('/blog/editpost/([0-9]+)', EditPost),
     ('/blog/deletepost/([0-9]+)', DeletePost),
+    ('/blog/like/([0-9]+)', LikePost),
     ('/blog/([0-9]+)', PostPage),
     ('/blog/register', Register),
 	('/blog/login', Login),
