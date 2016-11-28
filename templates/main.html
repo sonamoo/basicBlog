@@ -21,19 +21,18 @@
                     </span>
                 </div>
             </div>
-            <div class="row article-title">
-                <div class="col-md-12">
-                     <a href="/blog/{{a.key().id()}}">{{a.title}}</a>
-                     
-                </div>
-            </div>
-            <div class="row article-content">
-                <a href="/blog/{{a.key().id()}}">
+            <a href="/blog/{{a.key().id()}}">
+                <div class="row article-title">
                     <div class="col-md-12">
-                     {{a.contents}}
+                         {{a.title}}
                     </div>
-                </a>
-            </div>
+                </div>
+                <div class="row article-content">
+                    <div class="col-md-12">
+                        {{a.contents|truncate(600)}}
+                    </div>
+                </div>
+            </a>
             <div class="row">
                 <div class="col-md-12 article-like">
                     
