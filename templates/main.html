@@ -10,11 +10,29 @@
     {% endif %}
 	{% for a in articles %}
         
-	{{ a.render() | safe }}
+        <div class="row">
+            <div class="col-md-2 front-article-like">
+                {% if a.likes %}
+                <span class="front-article-like-number">{{a.likes|length}}</span> 
+                {% endif %}
+            </div>
+            <div class="col-md-10 front-article-title">
+                {{a.title}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="front-article-date">
+                    {{a.created.strftime("%b %d, %Y")}}
+                </div>
+                <div class="front-article-writer">
+                    {{a.created_by}}
+                </div>
+            </div>
+        </div>
         {% if username != "NoUser" %}
         <div class="article-buttons">
             <div class="row">
-                
                 <div class="col-md-6 article-like-comment">
                     <a href="/blog/like/{{a.key().id()}}">Like</a>
                     <a href="#">comment</a>

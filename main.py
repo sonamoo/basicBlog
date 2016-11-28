@@ -131,14 +131,6 @@ class Article(db.Model):
 		self._render_text = self.contents.replace('\n', '<br>')
 		return render_str("article.html", a = self)
 
-class Like(db.Model):
-	user_id = db.IntegerProperty(required = True)
-	post_id = db.IntegerProperty(required = True)
-
-	def getUserName(self):
-		user = User.by_id(self.user_id)
-		return user.name
-
 class Comment(db.Model):
 	user_id = db.IntegerProperty(required = True)
 	post_id = db.IntegerProperty(required = True)
@@ -152,12 +144,11 @@ class Comment(db.Model):
 	
 class MainPage(Handler):
 	def get(self):
-		articles = db.GqlQuery("select * from Article order by created desc limit 10")
+		articles = db.GqlQuery("select * from Article order by created desc")
 		#   articles = Article.all().order('-created')
 		#   This is google pocedure language, that can be used to get db.
 		if not self.user:
 			self.user = NoUser
-			
 
 		self.render("main.html", articles = articles, username = self.user.name)
 
