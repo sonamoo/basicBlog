@@ -1,0 +1,22 @@
+<div class="comments">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="article-date">
+                    Date : {{c.created.strftime("%b %d, %Y")}}
+                </div>
+                <div class="article-writer">
+                    Writer: {{c.created_by}}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <a href="/blog/editcomment/{{article.key().id()}}/{{c.key().id()}}">Edit</a>
+                <a href="/blog/deletecomment/{{article.key().id()}}/{{c.key().id()}}">Delete</a>
+            </div>
+            
+        </div>
+        <div class="row article-content">
+            <div class="col-md-12 text-justify">
+                {{c.comment.replace('\n', '<br>') | safe}}
+            </div>
+        </div>
+    </div>

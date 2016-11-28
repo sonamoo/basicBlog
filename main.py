@@ -133,11 +133,11 @@ class Article(db.Model):
 
 class Comment(db.Model):
 	created_by = db.StringProperty(required = True)
-	post_id = db.IntegerProperty(required = True)
 	comment = db.TextProperty(required = True)
+	post_id = db.IntegerProperty(required = True)
 	created = db.DateTimeProperty(auto_now_add = True)
 	last_modified = db.DateTimeProperty(auto_now = True)
-
+		
 	
 class MainPage(Handler):
 	def get(self):
@@ -157,6 +157,7 @@ class PostPage(Handler):
 		article = db.get(key)
 
 		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
+		
 
 		if not article:
 			self.error(404)
@@ -165,22 +166,28 @@ class PostPage(Handler):
 		self.render("permalink.html", article = article, comments = comments)
 
 	def post(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		article = db.get(key)
+		if self.user:
+			key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+			article = db.get(key)
+			comment = self.request.get('comment')
+			created_by = self.user.name	
 
-		comment = self.request.get("comment")
-		created_by = self.user.name
+			if comment:
+				c = Comment(parent = blog_key(), comment = comment, post_id = int(post_id), created_by = created_by)
+				c.put()
 
-		
+				comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
+				self.render("permalink.html", article = article, comments = comments)
 
-		if comment:
-			c = Comment(parent = blog_key(), comment = comment, post_id = int(post_id), created_by = created_by)
-			c.put()
+		else:
+			self.redirect('/blog/login')
 
-		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
-		self.render("permalink.html", article = article, comments = comments)
-
-
+class CommentPage(Handler):
+	def get(self, post_id, comment_id):
+		key = db.Key.from_path('Comment', int(comment_id),
+									 parent=blog_key())
+		c = db.get(key)
+		self.render("comment.html", c = c)
 
 class NewPost(Handler):
 	def get(self):
@@ -400,6 +407,7 @@ app = webapp2.WSGIApplication([
     ('/blog/deletecomment/([0-9]+)/([0-9]+)', DeleteComment),
     ('/blog/like/([0-9]+)', LikeArticle),
     ('/blog/([0-9]+)', PostPage),
+    ('/blog/([0-9]+)/([0-9]+)', CommentPage),
     ('/blog/register', Register),
 	('/blog/login', Login),
 	('/blog/logout', Logout),
