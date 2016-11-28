@@ -157,6 +157,7 @@ class MainPage(Handler):
 		#   This is google pocedure language, that can be used to get db.
 		if not self.user:
 			self.user = NoUser
+			
 
 		self.render("main.html", articles = articles, username = self.user.name)
 

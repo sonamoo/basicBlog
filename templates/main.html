@@ -11,12 +11,15 @@
 	{% for a in articles %}
         
 	{{ a.render() | safe }}
+        {% if username != "NoUser" %}
         <div class="article-buttons">
             <div class="row">
+                
                 <div class="col-md-6 article-like-comment">
                     <a href="/blog/like/{{a.key().id()}}">Like</a>
                     <a href="#">comment</a>
                 </div>
+                
                 {% if a.created_by == username %}
                 <div class="col-md-6 text-right">
                     <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
@@ -25,6 +28,8 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
+        
     
 	{% endfor %}
 
