@@ -2,9 +2,9 @@
 
 {% block content %}
   {{article.render() | safe}}
-<div class="comment-form">
+<div class="comment-input">
     <div class ="row">
-        <div class="col-md-12 article-comment-form">
+        <div class="col-md-12">
             <form method="post" role="form">
                 <div class="form-group ">
                     <textarea name="comment" class="form-control" rows="4" placeholder="Write a response"></textarea>
@@ -33,7 +33,7 @@
             
         </div>
         
-        <div class="row article-content">
+        <div class="row comment-content">
             <div class="col-md-12 text-justify">
                 <a href="/blog/{{article.key().id()}}{{c.key().id()}}">
                     {{c.comment.replace('\n', '<br>') | truncate(300, end='.....') | safe}}

@@ -1,7 +1,12 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;
-    max-width: 900px;
+    
+    
+}
+
+.main {
+    max-width: 700px;
     margin: 0 auto;
     
 }
@@ -126,17 +131,24 @@ a:hover {
     padding : 1em;    
 }
 
-.comment-form {
+.comment-input {
     margin-top: 1em;
     border: 1px solid #efefef;
     padding: 1em
 }
 
-.notice {
-    color : #005f5f;
+.comments {
+    padding: 1em;
+    border: 1px solid #efefef;
+    margin-top: 1em;
 }
 
-.article-like-comment a {
-    margin-right: 20px
+.comment-content {
+    font-size: 16px;
+    padding-top: 1em;
         
+}
+
+.notice {
+    color : #005f5f;
 }
