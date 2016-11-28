@@ -2,4 +2,42 @@
 
 {% block content %}
   {{article.render() | safe}}
+<div class="comment-form">
+    <div class ="row">
+        <div class="col-md-12 article-comment-form">
+            <form method="post" role="form">
+                <div class="form-group ">
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Write a response"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success text-right">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+    {% for c in comments %}
+    <div class="comments">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="article-date">
+                    Date : {{c.created.strftime("%b %d, %Y")}}
+                </div>
+                <div class="article-writer">
+                    Writer: {{c.created_by}}
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <a href="/blog/editcomment/{{article.key().id()}}/{{c.key().id()}}">Edit</a>
+                <a href="/blog/deletecomment/{{article.key().id()}}/{{c.key().id()}}">Delete</a>
+            </div>
+            
+        </div>
+        <div class="row article-content">
+            <div class="col-md-12 text-justify">
+                {{c.comment | safe}}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
 {% endblock %}

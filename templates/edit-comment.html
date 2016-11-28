@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="comment-form">
+    <div class ="row">
+        <div class="col-md-12 article-comment-form">
+            <form method="post" role="form">
+                <div class="form-group ">
+                    <textarea name="comment" class="form-control" rows="4" placeholder="Write a response">
+                    {{c.comment}}
+                    </textarea>
+                </div>
+                <button type="submit" class="btn btn-success text-right">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -115,11 +115,6 @@ a:hover {
     font-size: 18px;
 }
 
-.article-rate-number {
-    font-size: 25px;
-    color : #005f5f;
-}
-
 .article-date, .article-writer {
     color: gray;
 }
@@ -131,10 +126,17 @@ a:hover {
     padding : 1em;    
 }
 
+.comment-form {
+    margin-top: 1em;
+    border: 1px solid #efefef;
+    padding: 1em
+}
+
 .notice {
     color : #005f5f;
 }
 
 .article-like-comment a {
     margin-right: 20px
+        
 }

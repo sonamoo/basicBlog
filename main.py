@@ -132,24 +132,21 @@ class Article(db.Model):
 		return render_str("article.html", a = self)
 
 class Comment(db.Model):
-	user_id = db.IntegerProperty(required = True)
+	created_by = db.StringProperty(required = True)
 	post_id = db.IntegerProperty(required = True)
 	comment = db.TextProperty(required = True)
 	created = db.DateTimeProperty(auto_now_add = True)
 	last_modified = db.DateTimeProperty(auto_now = True)
 
-	def getUserName(self):
-		user = User.by_id(self.user_id)
-		return user.name
 	
 class MainPage(Handler):
 	def get(self):
 		articles = db.GqlQuery("select * from Article order by created desc")
 		#   articles = Article.all().order('-created')
 		#   This is google pocedure language, that can be used to get db.
+
 		if not self.user:
 			self.user = NoUser
-			redirect = NoUser.redirect
 
 		self.render("main.html", articles = articles, username = self.user.name)
 
@@ -159,18 +156,79 @@ class PostPage(Handler):
 		#key find the article from the post_id passed from the url
 		article = db.get(key)
 
+		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
+
 		if not article:
 			self.error(404)
 			return
 
-		self.render("permalink.html", article = article)
+		self.render("permalink.html", article = article, comments = comments)
+
+	def post(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		article = db.get(key)
+
+		comment = self.request.get("comment")
+		created_by = self.user.name
+
+		
+
+		if comment:
+			c = Comment(parent = blog_key(), comment = comment, post_id = int(post_id), created_by = created_by)
+			c.put()
+
+		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
+		self.render("permalink.html", article = article, comments = comments)
+
+
+
+class NewPost(Handler):
+	def get(self):
+		self.render("newpost.html")
+
+	def post(self):
+		title = self.request.get("title")
+		contents = self.request.get("contents")
+		created_by = self.user.name
+
+
+		if title and contents:
+			a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
+			a.put()
+			self.redirect('/blog/%s' % str(a.key().id()))
+
+		else:
+			error = "We need both a title and the blog content"
+			self.render("newpost.html", title = title, contents = contents, error = error)
+
+class EditPost(Handler):
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		self.render("edit-post.html", a = a)
+
+
+	def post(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		a.title = self.request.get("title")
+		a.contents = self.request.get("contents")
+		a.put()
+		self.redirect('/blog/%s' % str(a.key().id()))
+
+
+class DeletePost(Handler):
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		a.delete()
+		self.redirect('/blog/')
 
 class LikeArticle(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
 		#key find the article from the post_id passed from the url
 		article = db.get(key)
-
 		uid = self.read_secure_cookie('user_id')
 
 		
@@ -190,6 +248,51 @@ class LikeArticle(Handler):
 				self.redirect('/blog/')
 			else:
 				error = "you can\'t like your own post"
+				self.render("error.html", error = error)
+
+class EditComment(Handler):
+	def get(self, post_id, comment_id):
+
+		if self.user:
+			key = db.Key.from_path('Comment', int(comment_id),
+									 parent=blog_key())
+			c = db.get(key)
+
+			if c.created_by == self.user.name:
+				self.render("edit-comment.html", c = c)
+			else:
+				error = "Oops, this is not your comment"
+				self.render("error.html", error = error)
+
+		else:
+			self.redirect("/blog/login")
+
+	def post(self, post_id, comment_id):
+		
+		if not self.user:
+			self.redirect('/blog/login')
+
+		comment = self.request.get('comment')
+
+		if comment:
+			key = db.Key.from_path('Comment', int(comment_id),
+									 parent=blog_key())
+			c = db.get(key)
+			c.comment = self.request.get('comment')
+			c.put()
+			self.redirect('/blog/%s' % post_id)
+
+class DeleteComment(Handler):
+	def get(self, post_id, comment_id):
+		if self.user:
+			key = db.Key.from_path('Comment', int(comment_id),
+									 parent=blog_key())
+			c = db.get(key)
+			if c.created_by == self.user.name:
+				c.delete()
+				self.redirect('/blog/%s' % post_id)
+			else :
+				error = "Oops, this is not your comment"
 				self.render("error.html", error = error)
 
 
@@ -286,53 +389,15 @@ class Welcome(Handler):
 		else:
 			self.redirect('/blog/register')
 
-class NewPost(Handler):
-	def get(self):
-		self.render("newpost.html")
 
-	def post(self):
-		title = self.request.get("title")
-		contents = self.request.get("contents")
-		created_by = self.user.name
-
-
-		if title and contents:
-			a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
-			a.put()
-			self.redirect('/blog/%s' % str(a.key().id()))
-
-		else:
-			error = "We need both a title and the blog content"
-			self.render("newpost.html", title = title, contents = contents, error = error)
-
-class EditPost(Handler):
-	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		self.render("edit-post.html", a = a)
-
-
-	def post(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		a.title = self.request.get("title")
-		a.contents = self.request.get("contents")
-		a.put()
-		self.redirect('/blog/%s' % str(a.key().id()))
-
-
-class DeletePost(Handler):
-	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		a.delete()
-		self.redirect('/blog/')
 
 app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
     ('/blog/editpost/([0-9]+)', EditPost),
     ('/blog/deletepost/([0-9]+)', DeletePost),
+    ('/blog/editcomment/([0-9]+)/([0-9]+)', EditComment),
+    ('/blog/deletecomment/([0-9]+)/([0-9]+)', DeleteComment),
     ('/blog/like/([0-9]+)', LikeArticle),
     ('/blog/([0-9]+)', PostPage),
     ('/blog/register', Register),
