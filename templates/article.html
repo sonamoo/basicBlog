@@ -2,14 +2,6 @@
 <div class="article">
     <div class="article-heading">
         <div class="row">
-            <div class="col-md-12 article-rate">
-                {% if a.likes %}
-                <span class="article-rate-number">{{a.likes|length}}</span> 
-                <span>people voted for this post!</span>
-                {% endif %}
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-12 article-title">
                 {{a.title}}
             </div>
@@ -28,6 +20,13 @@
         <div class="row article-content">
             <div class="col-md-12 text-justify">
                 {{a._render_text | safe}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 article-like">
+                <a href="/blog/like/{{a.key().id()}}">
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                    {{a.likes|length}}</a> 
             </div>
         </div>
     </div>

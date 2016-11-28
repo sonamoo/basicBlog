@@ -221,7 +221,7 @@ class EditPost(Handler):
 		a.title = self.request.get("title")
 		a.contents = self.request.get("contents")
 		a.put()
-		self.redirect('/blog/%s' % str(a.key().id()))
+		self.redirect('/blog/%s' % post_id)
 
 
 class DeletePost(Handler):
@@ -252,7 +252,8 @@ class LikeArticle(Handler):
 				article.put()
 				
 				#self.redirect('/blog/%s' % str(article.key().id()))
-				self.redirect('/blog/')
+				self.redirect(self.request.referer)
+
 			else:
 				error = "you can\'t like your own post"
 				self.render("error.html", error = error)
