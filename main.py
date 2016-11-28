@@ -116,7 +116,7 @@ class User(db.Model):
 
 class NoUser(Handler):
 	name = "NoUser"
-	description = "Please login or create an account to write your opinion :)"
+	redirect = "/blog/login"
 
 
 class Article(db.Model):
@@ -149,6 +149,7 @@ class MainPage(Handler):
 		#   This is google pocedure language, that can be used to get db.
 		if not self.user:
 			self.user = NoUser
+			redirect = NoUser.redirect
 
 		self.render("main.html", articles = articles, username = self.user.name)
 
@@ -172,20 +173,25 @@ class LikeArticle(Handler):
 
 		uid = self.read_secure_cookie('user_id')
 
-		if article.created_by != uid:
-			
-			if article.likes and uid in article.likes:
-				article.likes.remove(uid)
-			else:
-				article.likes.append(uid)
-
-			article.put()
-			print(article.likes)
-			self.redirect('/blog/%s' % str(article.key().id()))
-
+		
+		if not self.user:
+			self.redirect('/blog/register')
 		else:
-			error = "you can\'t like your own post"
-			self.render("error.html", error = error)
+			if article.created_by != self.user.name:
+				
+				if article.likes and uid in article.likes:
+					article.likes.remove(uid)
+				else:
+					article.likes.append(uid)
+
+				article.put()
+				
+				#self.redirect('/blog/%s' % str(article.key().id()))
+				self.redirect('/blog/')
+			else:
+				error = "you can\'t like your own post"
+				self.render("error.html", error = error)
+
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):

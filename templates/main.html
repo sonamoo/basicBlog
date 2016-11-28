@@ -10,26 +10,42 @@
     {% endif %}
 	{% for a in articles %}
         
-        <div class="row">
-            <div class="col-md-2 front-article-like">
-                {% if a.likes %}
-                <span class="front-article-like-number">{{a.likes|length}}</span> 
-                {% endif %}
-            </div>
-            <div class="col-md-10 front-article-title">
-                {{a.title}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="front-article-date">
-                    {{a.created.strftime("%b %d, %Y")}}
-                </div>
-                <div class="front-article-writer">
-                    {{a.created_by}}
+        <div class="article">
+            <div class="row">
+                <div class="col-md-12 front-article-title">
+                    <span class="article-writer">
+                        {{a.created_by}}
+                    </span>
+                    <span class="article-date">
+                        {{a.created.strftime("%b %d, %Y")}}
+                    </span>
                 </div>
             </div>
+            <div class="row article-title">
+                <div class="col-md-12">
+                     <a href="/blog/{{a.key().id()}}">{{a.title}}</a>
+                     
+                </div>
+            </div>
+            <div class="row article-content">
+                <a href="/blog/{{a.key().id()}}">
+                    <div class="col-md-12">
+                     {{a.contents}}
+                    </div>
+                </a>
+            </div>
+            <div class="row">
+                <div class="col-md-12 article-like">
+                    
+                    <a href="/blog/like/{{a.key().id()}}">
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        {{a.likes|length}}</a> 
+                    
+                </div>
+            </div>
         </div>
+
+<!------------------------------------------------------------------
         {% if username != "NoUser" %}
         <div class="article-buttons">
             <div class="row">
@@ -47,6 +63,8 @@
             </div>
         </div>
         {% endif %}
+
+------------------------------------------------------->
         
     
 	{% endfor %}
