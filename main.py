@@ -125,13 +125,30 @@ class Article(db.Model):
 	created = db.DateTimeProperty(auto_now_add = True)
 	created_by = db.StringProperty(required = False)
 	last_modified = db.DateTimeProperty(auto_now = True)
-	likes = db.IntegerProperty(required = False)
-	liked_by = db.ListProperty(str)
-	comment = db.StringProperty(required = False)
+	likes = db.StringListProperty()
 
 	def render(self):
 		self._render_text = self.contents.replace('\n', '<br>')
 		return render_str("article.html", a = self)
+
+class Like(db.Model):
+	user_id = db.IntegerProperty(required = True)
+	post_id = db.IntegerProperty(required = True)
+
+	def getUserName(self):
+		user = User.by_id(self.user_id)
+		return user.name
+
+class Comment(db.Model):
+	user_id = db.IntegerProperty(required = True)
+	post_id = db.IntegerProperty(required = True)
+	comment = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+	last_modified = db.DateTimeProperty(auto_now = True)
+
+	def getUserName(self):
+		user = User.by_id(self.user_id)
+		return user.name
 	
 class MainPage(Handler):
 	def get(self):
@@ -155,23 +172,28 @@ class PostPage(Handler):
 
 		self.render("permalink.html", article = article)
 
-class LikePost(Handler):
-    def get(self, post_id):
-        if not self.user:
-            self.redirect("/login")
-        else:
-            key = db.Key.from_path("Article", int(post_id), parent=blog_key())
-            article = db.get(key)
+class LikeArticle(Handler):
+	def get(self, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		#key find the article from the post_id passed from the url
+		article = db.get(key)
 
-            if article.created_by == self.user:
-                self.redirect("/blog")
-            else:
-                article.likes += 1
-                article.liked_by.append(self.user)
-                article.put()
-                self.redirect("/blog")
+		uid = self.read_secure_cookie('user_id')
 
+		if article.created_by != uid:
+			
+			if article.likes and uid in article.likes:
+				article.likes.remove(uid)
+			else:
+				article.likes.append(uid)
 
+			article.put()
+			print(article.likes)
+			self.redirect('/blog/%s' % str(article.key().id()))
+
+		else:
+			error = "you can\'t like your own post"
+			self.render("error.html", error = error)
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -300,20 +322,6 @@ class EditPost(Handler):
 		a.put()
 		self.redirect('/blog/%s' % str(a.key().id()))
 
-class LikePost(Handler):
-	def get(self, post_id):
-		if not self.user:
-			self.redirect("/login")
-		else:
-			key = db.Key.from_path("Article", int(post_id), parent=blog_key())
-			article = db.get(key)
-
-		if article.created_by == self.user:
-			self.redirect("/blog")
-		else:
-			article.likes += 1
-			article.put()
-			self.redirect("/blog")
 
 class DeletePost(Handler):
 	def get(self, post_id):
@@ -327,7 +335,7 @@ app = webapp2.WSGIApplication([
     ('/blog/newpost', NewPost),
     ('/blog/editpost/([0-9]+)', EditPost),
     ('/blog/deletepost/([0-9]+)', DeletePost),
-    ('/blog/like/([0-9]+)', LikePost),
+    ('/blog/like/([0-9]+)', LikeArticle),
     ('/blog/([0-9]+)', PostPage),
     ('/blog/register', Register),
 	('/blog/login', Login),

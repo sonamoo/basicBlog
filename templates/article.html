@@ -2,8 +2,8 @@
     <div class="article-heading">
         <div class="row">
             <div class="col-md-12 article-rate">
-                {% if a.rate %}
-                <span class="article-rate-number">{{a.rate}}</span> 
+                {% if a.likes %}
+                <span class="article-rate-number">{{a.likes|length}}</span> 
                 <span>people voted for this post!</span>
                 {% endif %}
             </div>
