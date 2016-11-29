@@ -108,11 +108,11 @@ a:hover {
     font-weight: 100;
 }
 
-.article-date {
+.date {
     font-size: 12px;
 }
 
-.article-writer {
+.writer {
     font-size: 13px;
     color: #5cb85c;
 }

@@ -159,7 +159,7 @@ class PostPage(Handler):
 	def post(self, post_id):
 		if self.user:
 			key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-			article = db.get(key)
+			a = db.get(key)
 			comment = self.request.get('comment')
 			created_by = self.user.name	
 
@@ -169,7 +169,7 @@ class PostPage(Handler):
 				c.put()
 
 				comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
-				self.render("permalink.html", article = article, comments = comments)
+				self.render("permalink.html", a = a, comments = comments)
 
 		else:
 			self.redirect('/blog/login')
@@ -179,7 +179,10 @@ class CommentPage(Handler):
 		key = db.Key.from_path('Comment', int(comment_id),
 									 parent=blog_key())
 		c = db.get(key)
-		self.render("comment.html", c = c)
+
+		a_key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		self.render("comment.html", c = c, a = a)
 
 class NewPost(Handler):
 	def get(self):

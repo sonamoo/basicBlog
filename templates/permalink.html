@@ -4,15 +4,15 @@
 <div class="article">
     <div class="row">
         <div class="col-md-12 front-article-title">
-            <span class="article-writer">
+            <span class="writer">
                 {{a.created_by}}
             </span>
-            <span class="article-date">
+            <span class="date">
                 {{a.created.strftime("%b %d, %Y")}}
             </span>
         </div>
     </div>
-    <a href="/blog/{{a.key().id()}}">
+    
         <div class="row article-title">
             <div class="col-md-12">
                  {{a.title}}
@@ -23,7 +23,7 @@
                 {{a.contents.replace('\n', '<br>')| safe}}
             </div>
         </div>
-    </a>
+    
     <div class="row">
         <div class="col-md-6">
             <a class="article-like" href="/blog/like/{{a.key().id()}}">
@@ -57,16 +57,17 @@
     <div class="comments">
         <div class="row">
             <div class="col-md-6">
-                <div class="comment-writer">
+                <div class="writer">
                     {{c.created_by}}
                 </div>
-                <div class="comment-date">
+                <div class="date">
                     {{c.created.strftime("%b %d, %Y")}}
                 </div>
                 
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 text-right">
                 <a href="/blog/editcomment/{{a.key().id()}}/{{c.key().id()}}">Edit</a>
+                |
                 <a href="/blog/deletecomment/{{a.key().id()}}/{{c.key().id()}}">Delete</a>
             </div>
             
@@ -74,8 +75,8 @@
         
         <div class="row comment-content">
             <div class="col-md-12 text-justify">
-                <a href="/blog/{{a.key().id()}}{{c.key().id()}}">
-                    {{c.comment.replace('\n', '<br>') | truncate(300, end='.....') | safe}}
+                <a href="/blog/{{a.key().id()}}/{{c.key().id()}}">
+                    {{c.comment.replace('\n', '<br>') | truncate(300)|safe}}
                 </a>
             </div>
         </div>
