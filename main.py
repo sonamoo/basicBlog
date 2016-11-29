@@ -116,7 +116,6 @@ class User(db.Model):
 
 class NoUser(Handler):
 	name = "NoUser"
-	redirect = "/blog/login"
 
 
 class Article(db.Model):
@@ -144,11 +143,7 @@ class MainPage(Handler):
 		articles = db.GqlQuery("select * from Article order by created desc")
 		#   articles = Article.all().order('-created')
 		#   This is google pocedure language, that can be used to get db.
-
-		if not self.user:
-			self.user = NoUser
-
-		self.render("main.html", articles = articles, username = self.user.name)
+		self.render("main.html", articles = articles, user = self.user)
 
 class PostPage(Handler):
 	def get(self, post_id):
@@ -173,7 +168,8 @@ class PostPage(Handler):
 			created_by = self.user.name	
 
 			if comment:
-				c = Comment(parent = blog_key(), comment = comment, post_id = int(post_id), created_by = created_by)
+				c = Comment(parent = blog_key(), comment = comment, 
+							post_id = int(post_id), created_by = created_by)
 				c.put()
 
 				comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
@@ -191,22 +187,27 @@ class CommentPage(Handler):
 
 class NewPost(Handler):
 	def get(self):
+		if not self.user:
+			self.redirect('/blog/login')
 		self.render("newpost.html")
 
 	def post(self):
-		title = self.request.get("title")
-		contents = self.request.get("contents")
-		created_by = self.user.name
 
-
-		if title and contents:
-			a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
-			a.put()
-			self.redirect('/blog/%s' % str(a.key().id()))
-
+		if self.user:
+			title = self.request.get("title")
+			contents = self.request.get("contents")
+			created_by = self.user.name
+			
+			if title and contents:
+				a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
+				a.put()
+				self.redirect('/blog/%s' % str(a.key().id()))
+			else:
+				error = "We need both a title and the blog content"
+				self.render("newpost.html", title = title, contents = contents, error = error)
 		else:
-			error = "We need both a title and the blog content"
-			self.render("newpost.html", title = title, contents = contents, error = error)
+			error = "Please login or register to write your story!"
+			self.render("error.html", error = error)
 
 class EditPost(Handler):
 	def get(self, post_id):
@@ -388,7 +389,8 @@ class Login(Handler):
 class Logout(Handler):
 	def get(self):
 		self.logout()
-		self.redirect('/blog/register')
+		self.redirect('/blog/')
+
 
 class Welcome(Handler):
 	def get(self):

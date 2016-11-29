@@ -8,21 +8,31 @@
 </head>
 <body>
     <div class="container-fluid">
-        <header>
+        <header class="blog-header">
             <a href="/blog" class="main-title">
                 Simple Blog
             </a>
-            <div class="nav">
-              <ul>
-                <li id="nav_blog"><a href="/blog">Blog</a></li>
-                <li id="nav_post"><a href="/blog/newpost">Post</a></li>
-                <li id="nav_blog"><a href="/blog">About</a></li>
-                <li id="nav_register"><a href="/blog/register">Register</a></li>
-                <li id="nav_login"><a href="/blog/login">Login</a></li>
-              </ul>
+            <div class="blog-nav">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a type="button" class="btn btn-success" href="/blog/newpost">Write a Story</a>
+                        <a type="button" class="btn btn-primary" href="/blog/">Read Stories</a>
+                    </div>
+                    <div class="col-md-6 text-right user-info">
+                        {% if user %}
+                            <a href="#">Welcome! {{user.name}}</a> |
+                            <a href="/blog/logout">Logout</a>
+                        {% endif %}
+
+                        {% if not user %}
+                        <a href="/blog/login">Login</a> |
+                        <a href="/blog/register">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </header>
-        <section class="main">
+        <section class="main">    
         {% block content %}
         {% endblock %}       
         </section>
