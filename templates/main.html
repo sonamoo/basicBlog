@@ -35,23 +35,23 @@
             </a>
             <div class="row">
                 <div class="col-md-12 article-like">
-                    
                     <a href="/blog/like/{{a.key().id()}}">
                         <i class="fa fa-heart" aria-hidden="true"></i>
                         {{a.likes|length}}</a> 
                 </div>
+                
             </div>
         </div>
 
-        {% if username != "NoUser" %}
+        {% if a.created_by == username %}
         <div class="article-buttons">
             <div class="row">
-                {% if a.created_by == username %}
+                
                 <div class="col-md-12 text-right">
                     <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
                     <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
                 </div>
-                {% endif %}
+                
             </div>
         </div>
         {% endif %}
