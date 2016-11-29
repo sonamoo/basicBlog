@@ -93,13 +93,6 @@ a:hover {
     color: gray;
 }
 
-.article-buttons {
-    border-bottom: 1px solid #efefef;
-    border-left: 1px solid #efefef;
-    border-right: 1px solid #efefef;
-    padding : 1em;    
-}
-
 .comment-input {
     margin-top: 1em;
     border: 1px solid #efefef;

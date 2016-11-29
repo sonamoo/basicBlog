@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if username == "NoUser" %}
+    {% if not user%}
         <div class="notice">
             <div class="row">
                 <p class="text-center">Welcome to our Blog!</p>
@@ -34,29 +34,20 @@
                 </div>
             </a>
             <div class="row">
-                <div class="col-md-12 article-like">
+                <div class="col-md-6 article-like">
                     <a href="/blog/like/{{a.key().id()}}">
                         <i class="fa fa-heart" aria-hidden="true"></i>
-                        {{a.likes|length}}</a> 
+                        {{a.likes|length}}
+                    </a> 
                 </div>
-                
-            </div>
-        </div>
-
-        {% if a.created_by == username %}
-        <div class="article-buttons">
-            <div class="row">
-                
-                <div class="col-md-12 text-right">
+                {% if a.created_by == user.name %}
+                <div class="col-md-6 text-right">
                     <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
                     <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
                 </div>
-                
+                {% endif %}
             </div>
         </div>
-        {% endif %}
-        
-    
 	{% endfor %}
 
 {% endblock %}
