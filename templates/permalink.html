@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-  
 <div class="article">
     <div class="row">
         <div class="col-md-12 front-article-title">
@@ -21,7 +20,7 @@
         </div>
         <div class="row article-content">
             <div class="col-md-12">
-                {{a.contents|truncate(300)}}
+                {{a.contents.replace('\n', '<br>')| safe}}
             </div>
         </div>
     </a>
