@@ -4,7 +4,7 @@
         <div class="notice">
             <div class="row">
                 <p class="text-center">Welcome to our Blog!</p>
-                <p class="text-center">Please log in or create an account to post your article :) </p>
+                <p class="text-center">Please log in or create an account to share your story with everyone! :) </p>
             </div>
         </div>
     {% endif %}
@@ -34,11 +34,12 @@
                 </div>
             </a>
             <div class="row">
-                <div class="col-md-6 article-like">
-                    <a href="/blog/like/{{a.key().id()}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
-                        {{a.likes|length}}
-                    </a> 
+                <div class="col-md-6">
+                    <a class="article-like" href="/blog/like/{{a.key().id()}}">
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                    </a>
+                    <span class="article-like-number">{{a.likes|length}}</span>
+                     
                 </div>
                 {% if a.created_by == user.name %}
                 <div class="col-md-6 text-right">

@@ -1,8 +1,6 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 14px;
-    
-    
+	font-size: 14px;   
 }
 
 .main {
@@ -27,6 +25,7 @@ a:hover {
     text-decoration: none;
     
 }
+
 .error {
 	color: red;
 }
@@ -86,11 +85,23 @@ a:hover {
 }
 
 .article-like {
-    font-size: 18px;
+    font-size: 15px;
+    color: #5cb85c;
 }
 
-.article-date, .article-writer {
-    color: gray;
+.article-like-number {
+    font-size: 14px;
+    color:gray;
+    font-weight: 100;
+}
+
+.article-date {
+    font-size: 12px;
+}
+
+.article-writer {
+    font-size: 13px;
+    color: #5cb85c;
 }
 
 .comment-input {
