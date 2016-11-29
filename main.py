@@ -114,10 +114,6 @@ class User(db.Model):
 		if u and valid_pw(username, pw, u.pw_hash):
 			return u
 
-class NoUser(Handler):
-	name = "NoUser"
-
-
 class Article(db.Model):
 	title = db.StringProperty(required = True)
 	contents = db.TextProperty(required = True)
