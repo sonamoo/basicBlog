@@ -1,33 +1,32 @@
-
-<div class="article">
-    <div class="article-heading">
-        <div class="row">
-            <div class="col-md-12 article-title">
-                {{a.title}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="article-date">
-                    Date : {{a.created.strftime("%b %d, %Y")}}
-                </div>
-                <div class="article-writer">
-                    Writer: {{a.created_by}}
-                </div>
-            </div>
+<div class="permalink-article">
+    <div class="row">
+        <div class="col-md-12 front-article-title">
+            <span class="article-writer">
+                {{a.created_by}}
+            </span>
+            <span class="article-date">
+                {{a.created.strftime("%b %d, %Y")}}
+            </span>
         </div>
     </div>
+    <a href="/blog/{{a.key().id()}}">
+        <div class="row article-title">
+            <div class="col-md-12">
+                 {{a.title}}
+            </div>
+        </div>
         <div class="row article-content">
-            <div class="col-md-12 text-justify">
-                {{a._render_text | safe}}
+            <div class="col-md-12">
+                {{a.contents|truncate(300)}}
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 article-like">
-                <a href="/blog/like/{{a.key().id()}}">
-                    <i class="fa fa-heart" aria-hidden="true"></i>
-                    {{a.likes|length}}</a>
-                    <i class="fa fa-commenting-o" aria-hidden="true"></i>
-            </div>
+    </a>
+    <div class="row">
+        <div class="col-md-6">
+            <a class="article-like" href="/blog/like/{{a.key().id()}}">
+            <i class="fa fa-heart" aria-hidden="true"></i>
+            </a>
+            <span class="article-like-number">{{a.likes|length}}</span>
         </div>
     </div>
+</div>

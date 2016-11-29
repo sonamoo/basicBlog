@@ -65,6 +65,19 @@ a:hover {
     padding: 1em
 }
 
+.permalink-article {
+    margin-top : 2em;
+    border: 1px solid #efefef;
+    padding: 1em
+}
+
+.permalink-article-buttons {
+    border-left : 1px solid #efefef;
+    border-right : 1px solid #efefef;
+    border-bottom: 1px solid #efefef;
+    padding: 3px
+}
+
 .article a {
     text-decoration: none;
 }

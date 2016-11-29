@@ -1,21 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {{article.render() | safe}}
-
-
-<div class="comment-input">
-    <div class ="row">
-        <div class="col-md-12">
-            <form method="post" role="form">
-                <div class="form-group ">
-                    <textarea name="comment" class="form-control" rows="4" placeholder="Write a response"></textarea>
+  
+<div class="article">
+            <div class="row">
+                <div class="col-md-12 front-article-title">
+                    <span class="article-writer">
+                        {{a.created_by}}
+                    </span>
+                    <span class="article-date">
+                        {{a.created.strftime("%b %d, %Y")}}
+                    </span>
                 </div>
-                <button type="submit" class="btn btn-success text-right">Submit</button>
-            </form>
+            </div>
+            <a href="/blog/{{a.key().id()}}">
+                <div class="row article-title">
+                    <div class="col-md-12">
+                         {{a.title}}
+                    </div>
+                </div>
+                <div class="row article-content">
+                    <div class="col-md-12">
+                        {{a.contents|truncate(300)}}
+                    </div>
+                </div>
+            </a>
+            <div class="row">
+                <div class="col-md-6">
+                    <a class="article-like" href="/blog/like/{{a.key().id()}}">
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                    </a>
+                    <span class="article-like-number">{{a.likes|length}}</span>
+                     
+                </div>
+                {% if a.created_by == user.name %}
+                <div class="col-md-6 text-right">
+                    <a href="/blog/editpost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Edit</a>
+                    <a href="/blog/deletepost/{{a.key().id()}}" class="btn btn-default btn-sm" role="button">Delete</a>
+                </div>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</div>
+
     {% for c in comments %}
     <div class="comments">
         <div class="row">
