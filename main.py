@@ -145,16 +145,16 @@ class PostPage(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
 		#key find the article from the post_id passed from the url
-		article = db.get(key)
+		a = db.get(key)
 
 		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
 		
 
-		if not article:
+		if not a:
 			self.error(404)
 			return
 
-		self.render("permalink.html", article = article, comments = comments)
+		self.render("permalink.html", a = a, comments = comments)
 
 	def post(self, post_id):
 		if self.user:
