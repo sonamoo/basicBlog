@@ -11,8 +11,10 @@ import jinja2
 
 from google.appengine.ext import db
 
+#### Change the secret key
 secret = 'SWEiosdjfokweqr'
 
+#### Jinja2 templates
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 								autoescape = True)
@@ -30,6 +32,7 @@ def check_secure_val(secure_val):
 	if secure_val == make_secure_val(val):
 		return val
 
+#### Basic Handler. The basic functions that app needs are in this handler
 class Handler(webapp2.RequestHandler):
 	def write(self, *a, **kw):
 		self.response.out.write(*a, **kw)
@@ -65,6 +68,7 @@ class Handler(webapp2.RequestHandler):
 		uid = self.read_secure_cookie('user_id')
 		self.user = uid and User.by_id(int(uid))
 
+#### User security
 
 def make_salt(length = 5):
 	return ''.join(random.choice(letters) for x in xrange(length))
@@ -85,6 +89,8 @@ def blog_key(name = 'default'):
 
 def users_key(group = 'default'):
 	return db.Key.from_path('users', group)
+
+#### User model for database
 
 class User(db.Model):
 	name = db.StringProperty(required = True)
@@ -114,6 +120,8 @@ class User(db.Model):
 		if u and valid_pw(username, pw, u.pw_hash):
 			return u
 
+#### Article model for database including reder function
+
 class Article(db.Model):
 	title = db.StringProperty(required = True)
 	contents = db.TextProperty(required = True)
@@ -126,6 +134,7 @@ class Article(db.Model):
 		self._render_text = self.contents.replace('\n', '<br>')
 		return render_str("article.html", a = self)
 
+#### Comment model for database
 class Comment(db.Model):
 	created_by = db.StringProperty(required = True)
 	comment = db.TextProperty(required = True)
@@ -133,7 +142,7 @@ class Comment(db.Model):
 	created = db.DateTimeProperty(auto_now_add = True)
 	last_modified = db.DateTimeProperty(auto_now = True)
 		
-	
+#### Shows all the articles.
 class MainPage(Handler):
 	def get(self):
 		articles = db.GqlQuery("select * from Article order by created desc")
@@ -141,21 +150,21 @@ class MainPage(Handler):
 		#   This is google pocedure language, that can be used to get db.
 		self.render("main.html", articles = articles, user = self.user)
 
+#### Single article - shows the article that has the id in URL
 class PostPage(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
 		#key find the article from the post_id passed from the url
 		a = db.get(key)
-
-		comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
-		
-
+		comments = db.GqlQuery("select * from Comment where post_id = " 
+								+ post_id + " order by created desc")
 		if not a:
 			self.error(404)
 			return
 
 		self.render("permalink.html", a = a, comments = comments)
 
+	#### Handle comments
 	def post(self, post_id):
 		if self.user:
 			key = db.Key.from_path('Article', int(post_id), parent=blog_key())
@@ -168,12 +177,14 @@ class PostPage(Handler):
 							post_id = int(post_id), created_by = created_by)
 				c.put()
 
-				comments = db.GqlQuery("select * from Comment where post_id = " + post_id + " order by created desc")
+				comments = db.GqlQuery("select * from Comment where post_id = " 
+									+ post_id + " order by created desc")
 				self.render("permalink.html", a = a, comments = comments)
 
 		else:
 			self.redirect('/blog/login')
 
+#### Single comment page from the article's id and comment's id
 class CommentPage(Handler):
 	def get(self, post_id, comment_id):
 		key = db.Key.from_path('Comment', int(comment_id),
@@ -184,6 +195,7 @@ class CommentPage(Handler):
 		a = db.get(key)
 		self.render("comment.html", c = c, a = a)
 
+#### Handles posting article.
 class NewPost(Handler):
 	def get(self):
 		if not self.user:
@@ -198,16 +210,20 @@ class NewPost(Handler):
 			created_by = self.user.name
 			
 			if title and contents:
-				a = Article(parent = blog_key(), title = title, contents = contents, created_by = created_by)
+				a = Article(parent = blog_key(), title = title, 
+							contents = contents, created_by = created_by)
 				a.put()
 				self.redirect('/blog/%s' % str(a.key().id()))
 			else:
 				error = "We need both a title and the blog content"
-				self.render("newpost.html", title = title, contents = contents, error = error)
+				self.render("newpost.html", title = title, contents = contents,
+							 error = error)
 		else:
 			error = "Please login or register to write your story!"
 			self.render("error.html", error = error)
 
+
+#### Handles editing article.
 class EditPost(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
@@ -223,7 +239,7 @@ class EditPost(Handler):
 		a.put()
 		self.redirect('/blog/%s' % post_id)
 
-
+#### Deletes the article
 class DeletePost(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
@@ -231,6 +247,7 @@ class DeletePost(Handler):
 		a.delete()
 		self.redirect('/blog/')
 
+#### Handles 'like' with the id in URL
 class LikeArticle(Handler):
 	def get(self, post_id):
 		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
@@ -258,6 +275,7 @@ class LikeArticle(Handler):
 				error = "you can\'t like your own post"
 				self.render("error.html", error = error)
 
+#### Edit comments based on article's id and comment's id
 class EditComment(Handler):
 	def get(self, post_id, comment_id):
 
@@ -290,6 +308,7 @@ class EditComment(Handler):
 			c.put()
 			self.redirect('/blog/%s' % post_id)
 
+#### Delete comments based on article's id and comment's id
 class DeleteComment(Handler):
 	def get(self, post_id, comment_id):
 		if self.user:
@@ -304,6 +323,7 @@ class DeleteComment(Handler):
 				self.render("error.html", error = error)
 
 
+#### Validates the username, password, and email.
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
 	return username and USER_RE.match(username)
@@ -316,6 +336,7 @@ EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
 def valid_email(email):
 	return not email or EMAIL_RE.match(email)
 
+#### Handle user sign up. Shows error if the requirements are not fulfilled.
 class Signup(Handler):
 	def get(self):
 		self.render("sign-up.html")
@@ -354,6 +375,7 @@ class Signup(Handler):
 	def done(self, *a, **kw):
 		raise NotImplementedError
 
+#### Registers user.
 class Register(Signup):
 	def done(self):
 		u = User.by_name(self.username)
@@ -367,6 +389,8 @@ class Register(Signup):
 			self.login(u)
 			self.redirect('/blog/welcome')
 
+
+#### Hnadle user log in
 class Login(Handler):
 	def get(self):
 		self.render('login-form.html')
@@ -382,15 +406,13 @@ class Login(Handler):
 			msg = "Invalid login"
 			self.render('login-form.html', error = msg)
 
-#	def login(self, user):
-#		self.set_secure_cookie('user_id' , str(user.key().id()))
-
+#### Handles log out. Deletes the cookie.
 class Logout(Handler):
 	def get(self):
 		self.logout()
 		self.redirect('/blog/')
 
-
+#### Welcome page. After a user logs in.
 class Welcome(Handler):
 	def get(self):
 		if self.user:
