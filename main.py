@@ -170,8 +170,6 @@ class Comment(db.Model):
 		if c and c.created_by == username:
 			return c
 
-
-
 #### Shows all the articles.
 class MainPage(Handler):
 	def get(self):
@@ -211,7 +209,6 @@ class PostPage(Handler):
 					comments = db.GqlQuery("select * from Comment where post_id = " 
 										+ post_id + " order by created desc")
 					self.render("permalink.html", a = a, comments = comments)
-
 			else:
 				self.redirect('/blog/login')
 		else : 
