@@ -12,11 +12,13 @@
                 </div>
                 
             </div>
+            {% if a.created_by == user.name %}
             <div class="col-md-6 text-right">
                 <a href="/blog/editcomment/{{a.key().id()}}/{{c.key().id()}}">Edit</a>
                 |
                 <a href="/blog/deletecomment/{{a.key().id()}}/{{c.key().id()}}">Delete</a>
             </div>
+            {% endif %}
             
         </div>
         

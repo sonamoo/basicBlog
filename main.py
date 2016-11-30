@@ -221,7 +221,7 @@ class PostPage(Handler):
 #### Single comment page from the article's id and comment's id
 class CommentPage(Handler):
 	def get(self, post_id, comment_id):
-		c = check_if_valid_comment(comment_id)
+		c = Comment.check_if_valid_comment(comment_id)
 		if c:
 			key = db.Key.from_path('Comment', int(comment_id),
 										 parent=blog_key())
