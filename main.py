@@ -142,9 +142,10 @@ class Article(db.Model):
 			return a
 
 	@classmethod
-	def check_if_user_owns_post(cls, post_id, uid):
+	def check_if_user_owns_post(cls, post_id, username):
 		a = cls.check_if_valid_post(post_id)
-		if a and a.created_by == uid.name:
+		if a and a.created_by == username:
+			return a
 
 
 #### Comment model for database
@@ -162,10 +163,13 @@ class Comment(db.Model):
 		c = db.get(key)
 		if c :
 			return c
+
 	@classmethod
-	def check_if_user_owns_comment(cls, comment_id, uid):
+	def check_if_user_owns_comment(cls, comment_id, username):
 		c = cls.check_if_valid_comment(comment_id)
-		if c and c.created_by == uid.name
+		if c and c.created_by == username:
+			return c
+
 
 
 #### Shows all the articles.
@@ -179,12 +183,11 @@ class MainPage(Handler):
 #### Single article - shows the article that has the id in URL
 class PostPage(Handler):
 	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		#key find the article from the post_id passed from the url
-		a = db.get(key)
-		comments = db.GqlQuery("select * from Comment where post_id = " 
+		a = Article.check_if_valid_post(post_id)
+		if a :
+			comments = db.GqlQuery("select * from Comment where post_id = " 
 								+ post_id + " order by created desc")
-		if not a:
+		else :
 			self.error(404)
 			return
 
@@ -218,13 +221,18 @@ class PostPage(Handler):
 #### Single comment page from the article's id and comment's id
 class CommentPage(Handler):
 	def get(self, post_id, comment_id):
-		key = db.Key.from_path('Comment', int(comment_id),
-									 parent=blog_key())
-		c = db.get(key)
+		c = check_if_valid_comment(comment_id)
+		if c:
+			key = db.Key.from_path('Comment', int(comment_id),
+										 parent=blog_key())
+			c = db.get(key)
 
-		a_key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		self.render("comment.html", c = c, a = a)
+			a_key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+			a = db.get(key)
+			self.render("comment.html", c = c, a = a)
+		else :
+			self.error(404)
+			return
 
 #### Handles posting article.
 class NewPost(Handler):
@@ -234,80 +242,75 @@ class NewPost(Handler):
 		self.render("newpost.html")
 
 	def post(self):
-		a = Article.check_if_valid_post(post_id)
-		if a :
-			if self.user:
-				title = self.request.get("title")
-				contents = self.request.get("contents")
-				created_by = self.user.name
-				
-				if title and contents:
-					a = Article(parent = blog_key(), title = title, 
-								contents = contents, created_by = created_by)
-					a.put()
-					self.redirect('/blog/%s' % str(a.key().id()))
-				else:
-					error = "We need both a title and the blog content"
-					self.render("newpost.html", title = title, contents = contents,
-								 error = error)
+		if self.user:
+			title = self.request.get("title")
+			contents = self.request.get("contents")
+			created_by = self.user.name
+			
+			if title and contents:
+				a = Article(parent = blog_key(), title = title, 
+							contents = contents, created_by = created_by)
+				a.put()
+				self.redirect('/blog/%s' % str(a.key().id()))
 			else:
-				error = "Please login or register to write your story!"
-				self.render("error.html", error = error)
+				error = "We need both a title and the blog content"
+				self.render("newpost.html", title = title, contents = contents,
+							 error = error)
 		else:
-			self.error(404)
-			return
+			error = "Please login or register to write your story!"
+			self.render("error.html", error = error)
+		
 
 
 #### Handles editing article.
 class EditPost(Handler):
 	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		self.render("edit-post.html", a = a)
-
+		a = Article.check_if_user_owns_post(post_id, self.user.name)
+		if a:
+			self.render("edit-post.html", a = a)
+		else :
+			error = "Sorry, This is not your article"
+			self.render('error.html', error = error)
 
 	def post(self, post_id):
-		a = Article.check_if_valid_post(post_id)
-		if a and a.created_by == self.user.name:
+		a = Article.check_if_user_owns_post(post_id, self.user.name)
+		if a:
 			a.title = self.request.get("title")
 			a.contents = self.request.get("contents")
 			a.put()
 			self.redirect('/blog/%s' % post_id)
 		else :
-			self.error(404)
-			return
+			error = "Sorry, This is not your article."
+			self.render('error.html', error = error)
 
 #### Deletes the article
 class DeletePost(Handler):
 	def get(self, post_id):
-		a = Article.check_if_user_owns_post(post_id, uid)
+		a = Article.check_if_user_owns_post(post_id, self.user.name)
 		if a:
 			a.delete()
 			self.redirect('/blog/')
 		else :
-			error: "This is not your article"
+			error = "This is not your article"
 			self.render('error.html', error = error)
 
 #### Handles 'like' with the id in URL
 class LikeArticle(Handler):
 	def get(self, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		#key find the article from the post_id passed from the url
-		article = db.get(key)
+		a = Article.check_if_user_owns_post(post_id, self.user.name)
 		uid = self.read_secure_cookie('user_id')
 
-		
 		if not self.user:
 			self.redirect('/blog/register')
 		else:
-			if article.created_by != self.user.name:
+			if not a:
 				
-				if article.likes and uid in article.likes:
-					article.likes.remove(uid)
+				if a.likes and uid in a.likes:
+					a.likes.remove(uid)
 				else:
-					article.likes.append(uid)
+					a.likes.append(uid)
 
-				article.put()
+				a.put()
 				
 				#self.redirect('/blog/%s' % str(article.key().id()))
 				self.redirect(self.request.referer)
@@ -335,25 +338,23 @@ class EditComment(Handler):
 			self.redirect("/blog/login")
 
 	def post(self, post_id, comment_id):
-
 		a = Article.check_if_valid_post(post_id)
 		if a :
-			if not self.user:
-				self.redirect('/blog/login')
-			c = Comment.check_if_user_owns_comment(comment_id, uid)
+			c = Comment.check_if_user_owns_comment(comment_id, self.user.name)
 			if c:
 				c.comment = self.request.get('comment')
 				c.put()
 				self.redirect('/blog/%s' % post_id)
 		else :
-			self.error(404)
-			return
+			error = "Oops, this is not your comment"
+			self.render("error.html", error = error)
+
 
 #### Delete comments based on article's id and comment's id
 class DeleteComment(Handler):
 	def get(self, post_id, comment_id):
 		if self.user:
-			c = Comment.check_if_user_owns_comment(comment_id, uid)
+			c = Comment.check_if_user_owns_comment(comment_id, self.user.name)
 			if c:
 				c.delete()
 				self.redirect('/blog/%s' % post_id)
