@@ -134,6 +134,14 @@ class Article(db.Model):
 		self._render_text = self.contents.replace('\n', '<br>')
 		return render_str("article.html", a = self)
 
+	@classmethod
+	def check_if_valid_post(cls, post_id):
+		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+		a = db.get(key)
+		if a :
+			return a
+
+
 #### Comment model for database
 class Comment(db.Model):
 	created_by = db.StringProperty(required = True)
@@ -166,23 +174,29 @@ class PostPage(Handler):
 
 	#### Handle comments
 	def post(self, post_id):
-		if self.user:
-			key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-			a = db.get(key)
-			comment = self.request.get('comment')
-			created_by = self.user.name	
 
-			if comment:
-				c = Comment(parent = blog_key(), comment = comment, 
-							post_id = int(post_id), created_by = created_by)
-				c.put()
+		a = check_if_valid_post(post_id)
+		if a :
+			if self.user:
+				key = db.Key.from_path('Article', int(post_id), parent=blog_key())
+				a = db.get(key)
+				comment = self.request.get('comment')
+				created_by = self.user.name	
 
-				comments = db.GqlQuery("select * from Comment where post_id = " 
-									+ post_id + " order by created desc")
-				self.render("permalink.html", a = a, comments = comments)
+				if comment:
+					c = Comment(parent = blog_key(), comment = comment, 
+								post_id = int(post_id), created_by = created_by)
+					c.put()
 
-		else:
-			self.redirect('/blog/login')
+					comments = db.GqlQuery("select * from Comment where post_id = " 
+										+ post_id + " order by created desc")
+					self.render("permalink.html", a = a, comments = comments)
+
+			else:
+				self.redirect('/blog/login')
+		else : 
+			self.error(404)
+			return 
 
 #### Single comment page from the article's id and comment's id
 class CommentPage(Handler):
