@@ -21,7 +21,7 @@ class NewPost(Handler):
 				a.put()
 				self.redirect('/blog/%s' % str(a.key().id()))
 			else:
-				error = "We need both a title and the blog content"
+				error = "We need both a title and blog content"
 				self.render("newpost.html", title = title, contents = contents,
 							 error = error)
 		else:

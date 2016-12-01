@@ -25,12 +25,17 @@ class EditComment(Handler):
 
 	def post(self, post_id, comment_id):
 		a = Article.check_if_valid_post(post_id)
-		if a :
-			c = Comment.check_if_user_owns_comment(comment_id, self.user.name)
-			if c:
-				c.comment = self.request.get('comment')
+		c = Comment.check_if_user_owns_comment(comment_id, self.user.name)
+		if a and c:
+			comment = self.request.get('comment')
+			if comment:
+				c.comment = comment
 				c.put()
 				self.redirect('/blog/%s' % post_id)
+			else:
+				error = "Please input comment"
+				self.redner("comment.html" error = error , c = c)
+
 		else :
 			error = "Oops, this is not your comment"
 			self.render("error.html", error = error)
