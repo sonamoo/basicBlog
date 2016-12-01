@@ -1,36 +1,12 @@
-import os
-import re
-import hashlib
-import hmac
-import random
-
-from string import letters
-
 import webapp2
-import jinja2
-
 from google.appengine.ext import db
+from helpers import *
 
-#### Change the secret key
-secret = 'SWEiosdjfokweqr'
+#### Models
+from models.User import User
+from models.Article import Article
+from models.Comment import Comment
 
-#### Jinja2 templates
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
-								autoescape = True)
-
-def render_str(template, **params):
-	t = jinja_env.get_template(template)
-	return t.render(params)
-
-def make_secure_val(val):
-	secured_value = hmac.new(secret, val).hexdigest()
-	return '%s|%s' % (val, secured_value)
-
-def check_secure_val(secure_val):
-	val = secure_val.split('|')[0]
-	if secure_val == make_secure_val(val):
-		return val
 
 #### Basic Handler. The basic functions that app needs are in this handler
 class Handler(webapp2.RequestHandler):
@@ -67,108 +43,6 @@ class Handler(webapp2.RequestHandler):
 		webapp2.RequestHandler.initialize(self, *a, **kw)
 		uid = self.read_secure_cookie('user_id')
 		self.user = uid and User.by_id(int(uid))
-
-#### User security
-
-def make_salt(length = 5):
-	return ''.join(random.choice(letters) for x in xrange(length))
-
-def make_pw_hash(name, pw, salt = None):
-	if not salt:
-		salt = make_salt()
-	h = hashlib.sha256(name + pw + salt).hexdigest()
-	return '%s,%s' % (salt, h)
-
-def valid_pw(name, pw, h):
-	salt = h.split(',')[0]
-	return h == make_pw_hash(name, pw, salt)
-
-# blog_key is for the data store.
-def blog_key(name = 'default'):
-	return db.Key.from_path('blogs', name)
-
-def users_key(group = 'default'):
-	return db.Key.from_path('users', group)
-
-#### User model for database
-
-class User(db.Model):
-	name = db.StringProperty(required = True)
-	pw_hash = db.StringProperty(required = True)
-	email = db.StringProperty(required = False)
-
-	@classmethod
-	def by_id(cls, uid):
-		return User.get_by_id(uid, parent = users_key())
-
-	@classmethod
-	def by_name(cls, name):
-		u = User.all().filter('name =', name).get()
-		return u
-
-	@classmethod
-	def register(cls, name, pw, email = None):
-		pw_hash = make_pw_hash(name, pw)
-		return User(parent = users_key(),
-					name = name,
-					pw_hash = pw_hash,
-					email = email)
-
-	@classmethod
-	def verify_user(cls, username, pw):
-		u = cls.by_name(username)
-		if u and valid_pw(username, pw, u.pw_hash):
-			return u
-
-#### Article model for database including reder function
-
-class Article(db.Model):
-	title = db.StringProperty(required = True)
-	contents = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-	created_by = db.StringProperty(required = False)
-	last_modified = db.DateTimeProperty(auto_now = True)
-	likes = db.StringListProperty()
-
-	def render(self):
-		self._render_text = self.contents.replace('\n', '<br>')
-		return render_str("article.html", a = self)
-
-	@classmethod
-	def check_if_valid_post(cls, post_id):
-		key = db.Key.from_path('Article', int(post_id), parent=blog_key())
-		a = db.get(key)
-		if a :
-			return a
-
-	@classmethod
-	def check_if_user_owns_post(cls, post_id, username):
-		a = cls.check_if_valid_post(post_id)
-		if a and a.created_by == username:
-			return a
-
-
-#### Comment model for database
-
-class Comment(db.Model):
-	created_by = db.StringProperty(required = True)
-	comment = db.TextProperty(required = True)
-	post_id = db.IntegerProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-	last_modified = db.DateTimeProperty(auto_now = True)
-
-	@classmethod
-	def check_if_valid_comment(cls, comment_id):
-		key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
-		c = db.get(key)
-		if c :
-			return c
-
-	@classmethod
-	def check_if_user_owns_comment(cls, comment_id, username):
-		c = cls.check_if_valid_comment(comment_id)
-		if c and c.created_by == username:
-			return c
 
 #### Shows all the articles.
 class MainPage(Handler):
@@ -294,27 +168,24 @@ class DeletePost(Handler):
 #### Handles 'like' with the id in URL
 class LikeArticle(Handler):
 	def get(self, post_id):
-		a = Article.check_if_user_owns_post(post_id, self.user.name)
+		a = Article.check_if_valid_post(post_id)
 		uid = self.read_secure_cookie('user_id')
 
-		if not self.user:
-			self.redirect('/blog/register')
-		else:
-			if not a:
-				
-				if a.likes and uid in a.likes:
-					a.likes.remove(uid)
-				else:
-					a.likes.append(uid)
-
+		if a :
+			if a.created_by == self.user.name:
+				error = "you can\'t like your own post"
+				self.render('error.html', error = error)
+			elif not self.user:
+				self.redirect('/blog/login')
+			elif a.likes and uid in a.likes:
+				a.likes.remove(uid)
 				a.put()
-				
-				#self.redirect('/blog/%s' % str(article.key().id()))
 				self.redirect(self.request.referer)
 
 			else:
-				error = "you can\'t like your own post"
-				self.render("error.html", error = error)
+				a.likes.append(uid)
+				a.put()
+				self.redirect(self.request.referer)
 
 #### Edit comments based on article's id and comment's id
 class EditComment(Handler):
@@ -358,20 +229,6 @@ class DeleteComment(Handler):
 			else :
 				error = "Oops, this is not your comment"
 				self.render("error.html", error = error)
-
-
-#### Validates the username, password, and email.
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-def valid_username(username):
-	return username and USER_RE.match(username)
-
-PASS_RE = re.compile(r"^.{3,20}$")
-def valid_password(password):
-	return password and PASS_RE.match(password)
-
-EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-def valid_email(email):
-	return not email or EMAIL_RE.match(email)
 
 #### Handle user sign up. Shows error if the requirements are not fulfilled.
 class Signup(Handler):
@@ -458,7 +315,7 @@ class Welcome(Handler):
 			self.redirect('/blog/register')
 
 
-
+# Route
 app = webapp2.WSGIApplication([
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
