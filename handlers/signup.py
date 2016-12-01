@@ -1,5 +1,5 @@
 from handlers.handler import Handler
-from models.Article import Article
+from models.User import User
 from helpers import *
 
 #### Handle user sign up. Shows error if the requirements are not fulfilled.

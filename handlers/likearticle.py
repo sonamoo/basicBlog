@@ -1,4 +1,3 @@
-from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Article import Article
 from helpers import *

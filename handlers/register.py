@@ -1,6 +1,6 @@
-from google.appengine.ext import db
 from handlers.handler import Handler
 from handlers.signup import Signup
+from models.User import User
 from helpers import *
 
 #### Registers user.
