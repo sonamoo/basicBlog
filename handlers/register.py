@@ -1,7 +1,7 @@
 from handlers.handler import Handler
 from handlers.signup import Signup
 from models.User import User
-from helpers import *
+import helpers
 
 #### Registers user.
 class Register(Signup):

@@ -1,6 +1,5 @@
 import webapp2
-
-from helpers import *
+import helpers
 from models.User import User
 
 #### Basic Handler. The basic functions that app needs are in this handler

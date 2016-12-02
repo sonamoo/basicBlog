@@ -1,6 +1,6 @@
 import webapp2
+import helpers
 from google.appengine.ext import db
-from helpers import *
 
 #### Models
 from models.User import User
@@ -28,6 +28,7 @@ from handlers.welcome import Welcome
 
 # Route
 app = webapp2.WSGIApplication([
+    ('/', MainPage),
     ('/blog/?', MainPage),
     ('/blog/newpost', NewPost),
     ('/blog/editpost/([0-9]+)', EditPost),

@@ -1,6 +1,6 @@
 from handlers.handler import Handler
 from models.User import User
-from helpers import *
+import helpers
 
 #### Hnadle user log in
 class Login(Handler):

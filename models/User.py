@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from helpers import *
+import helpers
 
 #### User model for database
 class User(db.Model):

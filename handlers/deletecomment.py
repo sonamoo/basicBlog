@@ -1,7 +1,7 @@
 from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Comment import Comment
-from helpers import *
+import helpers
 
 #### Delete comments based on article's id and comment's id
 class DeleteComment(Handler):

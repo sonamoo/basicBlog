@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from helpers import *
+import helpers
 
 #### Article model for database including reder function
 class Article(db.Model):

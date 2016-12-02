@@ -1,6 +1,6 @@
 from handlers.handler import Handler
 from models.Article import Article
-from helpers import *
+import helpers
 
 
 #### Handles 'like' with the id in URL

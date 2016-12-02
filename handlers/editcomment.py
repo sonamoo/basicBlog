@@ -2,7 +2,7 @@ from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Article import Article
 from models.Comment import Comment
-from helpers import *
+import helpers
 
 
 #### Edit comments based on article's id and comment's id
@@ -34,7 +34,7 @@ class EditComment(Handler):
 				self.redirect('/blog/%s' % post_id)
 			else:
 				error = "Please input comment"
-				self.redner("comment.html" error = error , c = c)
+				self.redner("comment.html", error = error , c = c)
 
 		else :
 			error = "Oops, this is not your comment"

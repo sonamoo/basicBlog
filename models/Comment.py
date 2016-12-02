@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from helpers import *
+import helpers
 
 #### Comment model for database
 class Comment(db.Model):

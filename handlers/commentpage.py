@@ -1,6 +1,6 @@
 from google.appengine.ext import db
 from handlers.handler import Handler
-from helpers import *
+import helpers
 
 #### Single comment page from the article's id and comment's id
 class CommentPage(Handler):
