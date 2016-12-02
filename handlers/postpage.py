@@ -2,7 +2,7 @@ from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Article import Article
 from models.Comment import Comment
-import helpers
+from helpers import *
 
 #### Single article - shows the article that has the id in URL
 class PostPage(Handler):

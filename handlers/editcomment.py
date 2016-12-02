@@ -2,7 +2,7 @@ from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Article import Article
 from models.Comment import Comment
-import helpers
+from helpers import *
 
 
 #### Edit comments based on article's id and comment's id

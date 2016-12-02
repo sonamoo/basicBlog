@@ -1,6 +1,6 @@
 from handlers.handler import Handler
 from models.Article import Article
-import helpers
+from helpers import *
 
 #### Handles posting article.
 class NewPost(Handler):

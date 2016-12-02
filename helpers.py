@@ -25,9 +25,6 @@ def users_key(group = 'default'):
 def blog_key(name = 'default'):
 	return db.Key.from_path('blogs', name)
 
-
-
-
 #### Validates the username, password, and email.
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):

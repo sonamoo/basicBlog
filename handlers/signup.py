@@ -1,6 +1,6 @@
 from handlers.handler import Handler
 from models.User import User
-import helpers
+from helpers import *
 
 #### Handle user sign up. Shows error if the requirements are not fulfilled.
 class Signup(Handler):

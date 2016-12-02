@@ -1,7 +1,7 @@
 from google.appengine.ext import db
 from handlers.handler import Handler
 from models.Article import Article
-import helpers
+from helpers import *
 
 
 #### Deletes the article

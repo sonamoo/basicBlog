@@ -1,6 +1,6 @@
 from handlers.handler import Handler
 from models.Article import Article
-import helpers
+from helpers import *
 
 
 #### Handles 'like' with the id in URL
@@ -18,7 +18,7 @@ class LikeArticle(Handler):
 			elif a.likes and uid in a.likes:
 				a.likes.remove(uid)
 				a.put()
-				self.redirect(self.request.referer)
+				self.redirect(self.request.referer)	
 
 			else:
 				a.likes.append(uid)
