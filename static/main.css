@@ -6,8 +6,6 @@ body {
 .main {
     max-width: 700px;
     margin: 150px auto;
-    
-    
 }
 
 h2 {
@@ -22,8 +20,7 @@ a {
 }
 
 a:hover {
-    text-decoration: none;
-    
+    text-decoration: none;   
 }
 
 .error {
@@ -34,7 +31,6 @@ a:hover {
 .blog-nav {
     max-width: 700px;
     margin: 0 auto;
-        
 }
 
 .blog-header {
@@ -49,6 +45,7 @@ a:hover {
     background-color: white;
         
 }
+
 .main-title{
     display: block;
 	color: #222;
@@ -69,13 +66,6 @@ a:hover {
     margin-top : 2em;
     border: 1px solid #efefef;
     padding: 1em
-}
-
-.permalink-article-buttons {
-    border-left : 1px solid #efefef;
-    border-right : 1px solid #efefef;
-    border-bottom: 1px solid #efefef;
-    padding: 3px
 }
 
 .article a {
@@ -106,6 +96,10 @@ a:hover {
     font-size: 14px;
     color:gray;
     font-weight: 100;
+}
+
+.article-edit-cancel-buttons{
+    margin-right: 5px;
 }
 
 .date {

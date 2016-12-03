@@ -14,8 +14,11 @@
                 <textarea name="contents" class="form-control" rows="10">{{a.contents}}</textarea>
             </div>
                 <span class="error">{{error}}</span>
-                <a href="/blog/{{post_id}}" class="btn btn-default">Cancel</a>
-                <button type="submit" class="btn btn-primary pull-right">Submit</button>
+            <div class="form-group">
+                
+                <button type="submit" class="btn btn-primary btn-sm pull-right article-edit-submit-buttons">Submit</button>
+                <a href="/blog/{{post_id}}" class="btn btn-default btn-sm pull-right article-edit-cancel-buttons">Cancel</a>
+            </div>
 		</form>
         </div>
 </div>
