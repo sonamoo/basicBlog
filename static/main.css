@@ -1,12 +1,14 @@
 body {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 14px;   
+	font-size: 14px;
+
 }
 
 .main {
     max-width: 700px;
     margin: 150px auto 40px auto;
-}
+    min-height: 400px;
+}   
 
 h2 {
 	font-size: 24px;
@@ -25,6 +27,7 @@ a:hover {
 
 footer {
     background-color: #fafbfc;
+    min-height: 200px;
 }
 
 .error {
