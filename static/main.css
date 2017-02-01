@@ -5,7 +5,7 @@ body {
 
 .main {
     max-width: 700px;
-    margin: 150px auto;
+    margin: 150px auto 40px auto;
 }
 
 h2 {
@@ -21,6 +21,10 @@ a {
 
 a:hover {
     text-decoration: none;   
+}
+
+footer {
+    background-color: #fafbfc;
 }
 
 .error {
@@ -133,6 +137,17 @@ a:hover {
     color : #005f5f;
 }
 
+.footer-nav {
+    padding: 20px;
+    text-align: center;
+}
+
+.profile-icons {
+    width : 35px;
+    margin : 0 10px;
+}
+
+
 @media only screen and (min-width: 150px) and (max-width: 767px){
     
     body {
@@ -141,8 +156,7 @@ a:hover {
 
     .main {
     max-width: 100%;
-    margin: 0px;
-    margin-top: 140px;
+    margin: 140px 0 30px 0;
     }
 
     .blog-header {
@@ -165,10 +179,6 @@ a:hover {
     text-align: center;
     text-decoration: none;
     margin-bottom: 10px;
-    }
-
-    .blog-nav {
-
     }
 
 }
