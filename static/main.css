@@ -132,3 +132,43 @@ a:hover {
 .notice {
     color : #005f5f;
 }
+
+@media only screen and (min-width: 150px) and (max-width: 767px){
+    
+    body {
+        font-size: 140%;
+    }
+
+    .main {
+    max-width: 100%;
+    margin: 0px;
+    margin-top: 140px;
+    }
+
+    .blog-header {
+    border-bottom: 1px solid black;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    left:0;
+    right: 0;
+    top:0;
+    padding: 1em 1em 0 1em;
+    background-color: white;
+    }
+
+    .main-title{
+    display: block;
+    color: #222;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 10px;
+    }
+
+    .blog-nav {
+
+    }
+
+}
